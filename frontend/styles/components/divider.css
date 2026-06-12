@@ -1,0 +1,21 @@
+    /* Divider */
+    .ig-divider {
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+      color: var(--ig-secondary);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .ig-divider::before,
+    .ig-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: var(--ig-border);
+    }
+
+    .ig-divider span {
+      padding: 0 18px;
+    }

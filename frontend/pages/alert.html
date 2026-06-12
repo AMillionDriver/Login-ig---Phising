@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peringatan Keamanan!</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fafafa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .alert-container {
+            text-align: center;
+            max-width: 400px;
+            padding: 20px;
+            background: white;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #ed4956;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .countdown {
+            font-size: 14px;
+            color: #8e8e8e;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex justify-content-center align-items-center min-vh-100 bg-dark text-light p-3">
+    <!-- Kontainer utama dibatasi lebarnya biar pas di layar desktop/mobile -->
+    <div class="alert-container bg-white text-dark p-4 rounded-4 shadow-lg text-center" style="max-width: 400px; width: 100%;">
+        
+        <h2 class="fw-bold text-danger mb-3">Hayo akunnya diambil orang... 🗿</h2>
+        
+        <!-- Kontainer GIF yang sudah dijinakkan ukurannya -->
+        <div class="mx-auto my-3 rounded-3 overflow-hidden" style="max-width: 250px; position: relative; aspect-ratio: 1 / 1.2;">
+            <iframe src="https://giphy.com/embed/449dnLNnyYgNas2e03" 
+                    width="100%" 
+                    height="100%" 
+                    style="position: absolute; top: 0; left: 0; object-fit: cover;" 
+                    frameBorder="0" 
+                    class="giphy-embed" 
+                    allowFullScreen>
+            </iframe>
+        </div>
+        <p class="mb-3"><a href="https://giphy.com/gifs/babysideye-babysideeye-baby-sideeye-449dnLNnyYgNas2e03" class="text-decoration-none text-secondary" style="font-size: 10px;">via GIPHY</a></p>
+
+        <p class="fs-6 text-muted px-2">Data Anda barusan dikirim ke server penipu sebagai contoh simulasi edukasi.</p>
+        
+        <hr class="my-3 text-secondary opacity-25">
+
+        <div class="countdown fw-semibold text-primary" id="timer" style="font-size: 14px;">
+            Mengalihkan ke Instagram asli dalam 5 detik...
+        </div>
+    </div>
+</div>
+
+    <script>
+        let seconds = 5;
+        const timerElement = document.getElementById('timer');
+
+        const countdown = setInterval(() => {
+            seconds--;
+            timerElement.innerText = `Mengalihkan ke Instagram asli dalam ${seconds} detik...`;
+            
+            if (seconds <= 0) {
+                clearInterval(countdown);
+                window.location.href = 'https://www.instagram.com';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

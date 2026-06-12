@@ -1,0 +1,42 @@
+.offcanvas-backdrop.show {
+  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+.offcanvas-bottom {
+  background-color: var(--ig-bg);
+}
+
+.language-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--ig-border);
+  cursor: pointer;
+}
+
+.language-option:last-child {
+  border-bottom: none;
+}
+
+.language-option p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ig-text);
+}
+
+/* INI YANG DIBENERIN */
+.language-check {
+  color: var(--ig-blue);
+  font-size: 20px;
+  opacity: 0; /* ganti display:none jadi opacity 0 */
+  transition: opacity 0.2s ease;
+}
+
+.language-option.active .language-check {
+  opacity: 1; /* ganti display:block jadi opacity 1 */
+}
+
+.language-option.active p {
+  font-weight: 600;
+}

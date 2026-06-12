@@ -1,0 +1,98 @@
+.ig-input {
+      background-color: var(--ig-input-bg);
+      border: 1px solid var(--ig-border);
+      border-radius: 3px;
+      padding: 11px 8px;
+      font-size: 12px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.1s;
+      color: var(--ig-text);
+    }
+
+    .ig-input:focus {
+      border-color: #a8a8a8;
+    }
+
+    .ig-input::placeholder {
+      color: var(--ig-secondary);
+      font-size: 12px;
+    }
+
+    /* Password wrapper */
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--ig-text);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+      display: none;
+    }
+
+    .toggle-password.show {
+      display: block;
+    }
+
+    /* Login Button */
+    .ig-btn-login {
+      background-color: var(--ig-blue);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 10px;
+      width: 100%;
+      margin-top: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .ig-btn-login:hover {
+      opacity: 0.9;
+    }
+
+    .ig-btn-login:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    /* Create Account Button */
+    .ig-btn-create {
+      background-color: transparent;
+      border: 1px solid var(--ig-blue);
+      border-radius: 8px;
+      color: var(--ig-blue);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 10px;
+      width: 100%;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+
+    /* Links */
+    .ig-link {
+      color: var(--ig-secondary);
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .ig-link:hover {
+      text-decoration: underline;
+    }
+
+    .ig-link-primary {
+      color: var(--ig-blue);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+    }
