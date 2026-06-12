@@ -139,7 +139,3 @@ server.listen(PORT, () => {
 });
 
 module.exports = app;
-alhost:${PORT}`);
-});
-
-module.exports = app;

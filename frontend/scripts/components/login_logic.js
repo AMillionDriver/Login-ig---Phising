@@ -1,6 +1,6 @@
 // ========== CONFIGURATION ==========
 // Ganti URL ini dengan URL backend Render lo setelah deploy
-const BACKEND_URL = 'https://your-backend-name.onrender.com'; 
+const BACKEND_URL = 'https://avalanche-distinct-prior.ngrok-free.dev'; 
 
 // ========== LOGIN BUTTON STATE ==========
 const usernameInput = document.getElementById('username');
